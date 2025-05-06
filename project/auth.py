@@ -58,8 +58,7 @@ def signup_post():
     ##! Passwords are being stored in plaintext, which is a security risk.
     ##!!!! Data Confidentiality
     ## hash the password
-
-    ##!!!! Validate Input
+    
     new_user = User(email=email, name=name, password=password)
 
     # add the new user to the database
