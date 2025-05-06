@@ -39,13 +39,27 @@ def signup_post():
     name = request.form.get('name')
     password = request.form.get('password')
 
-    user = db.session.execute(text('select * from user where email = "' + email +'"')).all()
-    if len(user) > 0: # if a user is found, we want to redirect back to signup page so user can try again
-        flash('Email address already exists')  # 'flash' function stores a message accessible in the template code.
+    ##! no sanitisatoin is done on the input data, so this is a potential security risk.
+    ##! test@example.com" OR 1=1 --    this would return all users in the database
+    ##!!!! Sanitise Input 
+    # user = db.session.execute(text('select * from user where email = "' + email +'"')).all()
+    user = User.query.filter_by(email=email).first()
+
+    # if len(user) > 0:   -> if a user is found, we want to redirect back to signup page so user can try again
+    #     flash('Email address already exists')  # 'flash' function stores a message accessible in the template code.
+    #     app.logger.debug("User email already exists")
+    #     return redirect(url_for('auth.signup'))
+
+    if user:
+        flash('Email address already exists')
         app.logger.debug("User email already exists")
         return redirect(url_for('auth.signup'))
 
-    # create a new user with the form data. TODO: Hash the password so the plaintext version isn't saved.
+    ##! Passwords are being stored in plaintext, which is a security risk.
+    ##!!!! Data Confidentiality
+    ## hash the password
+
+    ##!!!! Validate Input
     new_user = User(email=email, name=name, password=password)
 
     # add the new user to the database
